@@ -1,0 +1,23 @@
+{
+  "name": "backend-challenge",
+  "version": "1.0.0",
+  "description": "Backend Challenge for Potential Position",
+  "main": "server/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon server/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Cowie22/Backend-Challenge.git"
+  },
+  "author": "Ryan Cowie",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Cowie22/Backend-Challenge/issues"
+  },
+  "homepage": "https://github.com/Cowie22/Backend-Challenge#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
