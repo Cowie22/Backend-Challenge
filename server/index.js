@@ -5,9 +5,15 @@ const app = express();
 const bodyParser = require('body-parser');
 const morgan = require('morgan');
 const axios = require('axios');
+const apicache = require('apicache');
 
 app.use(bodyParser.json());
 app.use(morgan('dev'));
+
+// Step 5 Sets up cache for requests
+const cache = apicache.middleware
+
+// app.use(cache('60 minutes'))
 
 app.use(express.static(path.join(__dirname, '../client/public')));
 
@@ -16,19 +22,21 @@ const PORT = process.env.PORT || 2222;
 
 
 // Step 1 of challenge
-app.get('/api/ping', (req, res) => {
+// Second argument is for cache
+app.get('/api/ping', cache('60 minutes'), (req, res) => {
   res.status(200).send({
     success: 'true',
   })
 })
 
 // Step 2 of challenge
+// Second argument is for cache
 // I believe the solution branch is wrong or that they are not specific enough
 // The prompt says to gather all blog posts that have at least one tag
 // However the solution branch contains blog post that only have Tech and or History tags (At least one of each).
 // Here I have gathered all of the posts with at least one tag and filtered out the repeated ones.
 
-app.get('/api/posts', (req, res) => {
+app.get('/api/posts', cache('60 minutes'), (req, res) => {
   // Gets all posts with at least one tag from the API using axios
   axios.all([
     axios.get('http://hatchways.io/api/assessment/blog/posts?tag=tech'),
@@ -81,11 +89,12 @@ app.get('/api/posts', (req, res) => {
 })
 
 // Step 3 of Challenge
+// Second argument is for cache
 // I'm going to make a third route /api/posts/SortBy, do to the confusion from the previous step
 // I will repeat what is show in the solution branch for step 3
 // Gather all posts with at least one tag from history and tech
 // And then sort by likes with the most likes on top
-app.get('/api/posts/sortBy', (req, res) => {
+app.get('/api/posts/sortBy', cache('60 minutes'), (req, res) => {
   axios.all([
     axios.get('http://hatchways.io/api/assessment/blog/posts?tag=tech'),
     axios.get('http://hatchways.io/api/assessment/blog/posts?tag=history')
