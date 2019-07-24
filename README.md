@@ -25,5 +25,5 @@ Nodemon
 4. step 1 solution will be found at localhost:2222/api/ping
 5. step 2 solution will be found at localhost:2222/api/posts
 6. step 3 solution: do to slight confusion in the requirements of step 2 will be fount at localhost:2222/api/posts/sortBy (More information in the code comments)
-7. run nom test to see the passing tests in the terminal
+7. run npm test to see the passing tests in the terminal
 ```

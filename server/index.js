@@ -31,7 +31,7 @@ app.get('/api/ping', cache('60 minutes'), step1)
 // However the solution branch contains blog post that only have Tech and or History tags (At least one of each).
 // Here I have gathered all of the posts with at least one tag and filtered out the repeated ones.
 
-app.get('/api/posts', cache('60 minutes'), getTags);
+app.get('/api/posts/:tags', cache('60 minutes'), getTags);
 
 // Step 3 of Challenge
 // Second argument is for cache
