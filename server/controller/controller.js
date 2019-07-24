@@ -7,39 +7,84 @@ const step1 = (req, res) => {
 }
 
 const getTags = (req, res) => {
-  const { tags } = req.params;
-  console.log('params', tags);
-  if (tags.indexOf(',') !== - 1) {
-    console.log('one', tags)
-    // let multiTags = tags;
-    // console.log('second', multiTags)
-    let tagArray = tags.split(',');
-    console.log('third', tagArray);
-    let getPaths = tagArray.map((tag, i) => {
-      return axios.get(`http://hatchways.io/api/assessment/blog/posts?tag=${tag}`)
+  const { tags, sortBy, direction } = req.params;
+  const validSortValues = ['id', 'author', 'authorId', 'likes', 'popularity', 'reads', 'tags', undefined];
+  const validDirections = ['asc', 'desc', undefined];
+
+  if (validSortValues.indexOf(sortBy) === - 1) {
+    res.status(400).send({
+      error: 'sortBy parameter is invalid',
     });
-    console.log(getPaths)
+  }
+  if (validDirections.indexOf(direction) === -1) {
+    res.status(400).send({
+      error: 'sortBy parameter is invalid',
+    });
+  }
+
+  if (tags.indexOf(',') !== - 1) {
+    let tagArray = tags.split(',');
+    let getPaths = tagArray.map((tag, i) => {
+      return axios.get(`http://hatchways.io/api/assessment/blog/posts?tag=${tag}&sortBy=${sortBy}&direction=${direction}`)
+    });
     axios.all([
       ...getPaths
     ])
-      .then(axios.spread((acct, perms) => {
-        console.log('fifth', acct.data.posts)
-        res.status(200).send(acct.data.posts);
+      .then(axios.spread((tag1, tag2, tag3, tag4, tag5, tag6, tag7, tag8, tag9) => {
+        let data = [
+          tag1 ? tag1.data.posts : '',
+          tag2 ? tag2.data.posts : '',
+          tag3 ? tag3.data.posts : '',
+          tag4 ? tag4.data.posts : '',
+          tag5 ? tag5.data.posts : '',
+          tag6 ? tag6.data.posts : '',
+          tag7 ? tag7.data.posts : '',
+          tag8 ? tag8.data.posts : '',
+          tag9 ? tag9.data.posts : ''
+        ]
+        let post = {};
+        let posts = [];
+        for (let i = 0; i < data.length; i++) {
+          let blog = data[i];
+          for (let i = 0; i < blog.length; i++) {
+            post[blog[i].id] = blog[i];
+          }
+        }
+        // Create response object so that the result of the request is in the correct format
+        for (let key in post) {
+          posts.push(post[key]);
+        }
+        if (sortBy) {
+          if (direction === 'desc') {
+            posts = posts.sort((a, b) => (b[sortBy] > a[sortBy]) ? 1 : -1);
+          } else {
+            posts = posts.sort((a, b) => (b[sortBy] < a[sortBy]) ? 1 : -1);
+          }
+        }
+        res.status(200).send(posts);
       }))
       .catch(error => {
         res.status(400).send({
-          error: 'Tags parameter is required'
+          error: 'Tags parameter is required',
         })
         console.log(error)
       });
   } else {
-    axios.get(`http://hatchways.io/api/assessment/blog/posts?tag=${tags}`)
+    axios.get(`http://hatchways.io/api/assessment/blog/posts?tag=${tags}&sortBy=${sortBy}&direction=${direction}`)
       .then(request => {
-        res.status(200).send(request.data);
+        let data = request.data.posts;
+        if (sortBy) {
+          if (direction === 'desc') {
+            data = data.sort((a, b) => (b[sortBy] > a[sortBy]) ? 1 : -1);
+          } else {
+            data = data.sort((a, b) => (b[sortBy] < a[sortBy]) ? 1 : -1);
+          }
+        }
+        res.status(200).send(data);
       })
       .catch(error => {
         res.status(400).send({
-          error: 'Tags parameter is required'
+          error: 'Tags parameter is required',
         })
         console.log(error)
       });
@@ -75,21 +120,21 @@ const getTags = (req, res) => {
 //       response9.data.posts
 //     ];
 //     // Object so that a hash can be made on the id of the post and remove duplicates
-//     let post = {};
-//     let posts = [];
-//     for (let i = 0; i < data.length; i++) {
-//       let blog = data[i];
-//       for (let i = 0; i < blog.length; i++) {
-//         post[blog[i].id] = blog[i];
-//       }
-//     }
-//     // Create response object so that the result of the request is in the correct format
-//     for (let key in post) {
-//       posts.push(post[key]);
-//     }
-//     let response = {
-//       posts,
-//     }
+    // let post = {};
+    // let posts = [];
+    // for (let i = 0; i < data.length; i++) {
+    //   let blog = data[i];
+    //   for (let i = 0; i < blog.length; i++) {
+    //     post[blog[i].id] = blog[i];
+    //   }
+    // }
+    // // Create response object so that the result of the request is in the correct format
+    // for (let key in post) {
+    //   posts.push(post[key]);
+    // }
+    // let response = {
+    //   posts,
+    // }
 //     res.status(200).send(response);
 //   }))
   // .catch(error => {
