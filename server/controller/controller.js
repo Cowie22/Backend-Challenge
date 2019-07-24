@@ -11,20 +11,20 @@ const getTags = (req, res) => {
   console.log('params', tags);
   if (tags.indexOf(',') !== - 1) {
     console.log('one', tags)
-    let multiTags = tags.slice(1)
-    console.log('second', multiTags)
-    let tagArray = multiTags.split(',');
-    console.log('third', tagArray)
+    // let multiTags = tags;
+    // console.log('second', multiTags)
+    let tagArray = tags.split(',');
+    console.log('third', tagArray);
     let getPaths = tagArray.map((tag, i) => {
-      return axios.all([
-        console.log('this tag', tag),
-        axios.get(`http://hatchways.io/api/assessment/blog/posts?tag=${tag}`),
-      ])
-      // .then(request => {
-      //   res.send([...getPaths])
-      // })
-      .then(axios.spread((getPaths) => {
-        res.status(200).send(getPaths);
+      return axios.get(`http://hatchways.io/api/assessment/blog/posts?tag=${tag}`)
+    });
+    console.log(getPaths)
+    axios.all([
+      ...getPaths
+    ])
+      .then(axios.spread((acct, perms) => {
+        console.log('fifth', acct.data.posts)
+        res.status(200).send(acct.data.posts);
       }))
       .catch(error => {
         res.status(400).send({
@@ -32,9 +32,8 @@ const getTags = (req, res) => {
         })
         console.log(error)
       });
-    })
   } else {
-    axios.get(`http://hatchways.io/api/assessment/blog/posts?tag=${tags.slice(1)}`)
+    axios.get(`http://hatchways.io/api/assessment/blog/posts?tag=${tags}`)
       .then(request => {
         res.status(200).send(request.data);
       })
