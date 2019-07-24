@@ -6,7 +6,7 @@ const bodyParser = require('body-parser');
 const morgan = require('morgan');
 const axios = require('axios');
 const apicache = require('apicache');
-const { step1, getTags, sortPosts } = require('./controller/controller.js')
+const { step1, getTags } = require('./controller/controller.js')
 
 app.use(bodyParser.json());
 app.use(morgan('dev'));
@@ -21,26 +21,20 @@ const PORT = process.env.PORT || 2222;
 
 // Step 1 of challenge
 // Second argument is for cache
+// Cache was benchmarked seeing the request times in the terminal, with and without the cache.
+// The response times reduce with subsequent calls while using the cache and they do not reduce
+// Without the cache as expected.
+
+// Both routes were benchmarked and visualized against the sample data using Postman
 
 app.get('/api/ping', cache('60 minutes'), step1)
 
 // Step 2 of challenge
 // Second argument is for cache
-// I believe the solution branch is wrong or that they are not specific enough
-// The prompt says to gather all blog posts that have at least one tag
-// However the solution branch contains blog post that only have Tech and or History tags (At least one of each).
-// Here I have gathered all of the posts with at least one tag and filtered out the repeated ones.
+// Tags are a required parameter, while sortBy and direction are optional.
+// SortBy and direction default to id and asc, respectively
 
 app.get('/api/posts/:tags/:sortBy?/:direction?', cache('60 minutes'), getTags);
-
-// Step 3 of Challenge
-// Second argument is for cache
-// I'm going to make a third route /api/posts/SortBy, do to the confusion from the previous step
-// I will repeat what is show in the solution branch for step 3
-// Gather all posts with at least one tag from history and tech
-// And then sort by likes with the most likes on top
-
-app.get('/api/posts/sortBy', cache('60 minutes'), sortPosts);
 
 
 app.listen(PORT, () => {
